@@ -122,7 +122,7 @@ public class Cliente
 				case 1:					
 					if(comando.equals(OK)) 
 					{
-						System.out.println("Se intercambiará el Certificado Digital");
+						System.out.println("Se intercambiara el Certificado Digital");
 						seguridad.setLlaveAsimetrica();
 						X509v3CertificateBuilder certificado = seguridad.crearCertificado();
 						//TODO Pues si...
