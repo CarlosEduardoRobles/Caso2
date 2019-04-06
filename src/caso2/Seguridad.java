@@ -4,17 +4,13 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
-import java.security.PublicKey;
 import java.security.SecureRandom;
-import java.security.cert.X509Certificate;
 import java.util.Calendar;
 import java.util.Date;
 
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
-import javax.management.remote.SubjectDelegationPermission;
-import javax.security.auth.x500.X500Principal;
 
 import org.bouncycastle.cert.*;
 import org.bouncycastle.asn1.ASN1Sequence;
@@ -163,22 +159,5 @@ public class Seguridad
 			return messageDigest.digest();
 		} 
 		catch (Exception e) {return null;}
-	}
-	
-	public byte[] calcularHash(String mensaje) 
-	{
-		try
-		{
-			String msj = mensaje;
-			byte[] text = msj.getBytes();
-			byte [] digest = getKeyDigest(text);
-			
-			return digest;
-		}
-		catch (Exception e) 
-		{
-			System.out.println("Excepcion: " + e.getMessage());
-			return null;
-		}
 	}
 }
