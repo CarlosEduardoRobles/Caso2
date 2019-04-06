@@ -7,11 +7,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
-import java.security.cert.CertificateFactory;
-import java.security.cert.X509Certificate;
 import java.util.Scanner;
 
 import javax.xml.bind.DatatypeConverter;
+
+import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.util.encoders.Hex;
 
 public class Cliente 
 {
@@ -119,15 +120,16 @@ public class Cliente
 					break;
 					
 				case 1:					
-					/*if(comando.equals(OK)) 
+					if(comando.equals(OK)) 
 					{
 						System.out.println("Se intercambiará el Certificado Digital");
 						seguridad.setLlaveAsimetrica();
-						java.security.cert.X509Certificate certi = seguridad.crearCertificado();
-						byte[] bytesCertiPem = certi.getEncoded();
+						X509v3CertificateBuilder certificado = seguridad.crearCertificado();
+						//TODO Pues si...
+						/*byte[] bytesCertiPem = certificado.;
 						String certiString = new String(Hex.toHexString(bytesCertiPem));
-						String certiFinal = certiString;
-						writer.println(certiFinal);
+						String certiFinal = certiString;*/
+						writer.println(certificado.toString());
 						
 						estado++;
 					}
@@ -135,42 +137,41 @@ public class Cliente
 					{
 						System.out.println(ERROR);
 						esperando = false;
-					}*/
+					}
 					break;
 					
 				case 2:
-					/*if(!comando.equals(OK)) 
+					if(!comando.equals(OK)) 
 					{
 					
-						System.out.println("Certificado Digital del Servidor");
+						System.out.println("Certificado digital del Servidor");
 						System.out.println(comando);
-						CertificateFactory certFactory = CertificateFactory.getInstance("X.509");
 						InputStream in = new ByteArrayInputStream(Hex.decode(comando));
-						X509Certificate certiServi = (X509Certificate) certFactory.generateCertificate(in);
+						X509v3CertificateBuilder certiServi = seguridad.crearCertificado();
 						seguridad.setCertificado(certiServi);
 						
 						System.out.println("CLIENTE: OK");
 						writer.println(OK);
 
 						estado++;
-					}*/
+					}
 					break;
 					
 				case 3:
-					/*cifra = Hex.decode(comando);
+					cifra = Hex.decode(comando);
 					String valor = seguridad.decifrarAsimetricamente(cifra);
 					seguridad.setLlaveSimetrica(cifra);
 					cifra = seguridad.cifrarAsimetrica(valor);
 					cifra = Hex.encode(cifra);
 					writer.println(new String(cifra));
 					
-					estado++;*/
+					estado++;
 					
 					break;
 				case 4:
 					if(comando.equals(OK)) 
 					{
-						/*System.out.println("Ingrese la consulta");
+						System.out.println("Ingrese la consulta");
 						String id = sc.nextInt()+"";
 						cifra = seguridad.cifrarSimetrica((id).getBytes());
 						cifra = Hex.encode(cifra);
@@ -180,7 +181,7 @@ public class Cliente
 						cifra = Hex.encode(cifra);
 						writer.println(cifra);
 						System.out.println("Consulta HMAC");
-						estado++;*/
+						estado++;
 					}
 					
 					break;
@@ -192,7 +193,7 @@ public class Cliente
 					}
 					else
 						System.out.println("Hubo un error al realizar la consulta: "+comando);
-					/*
+					
 					if(!responde)
 					{
 						byte[] llave = Hex.decode(comando);
@@ -211,10 +212,10 @@ public class Cliente
 						estado++;
 						responde = false;
 					}	
-					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));*/
+					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
 					
 				case 6:
-					/*comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
+					comando = seguridad.decifrarSimetricamente(Hex.decode(comando));
 					if(!responde&&comando.equals(OK)) {
 						termino = true;
 						break;
@@ -222,7 +223,7 @@ public class Cliente
 					else
 						throw new Exception ("Ocurrio un error");
 				default: 
-					estado = 0;*/
+					estado = 0;
 					break;
 					
 				}

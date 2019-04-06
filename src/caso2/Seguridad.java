@@ -4,6 +4,7 @@ import java.math.BigInteger;
 import java.security.KeyPair;
 import java.security.KeyPairGenerator;
 import java.security.MessageDigest;
+import java.security.PublicKey;
 import java.security.SecureRandom;
 import java.security.cert.X509Certificate;
 import java.util.Calendar;
@@ -12,9 +13,13 @@ import java.util.Date;
 import javax.crypto.Cipher;
 import javax.crypto.SecretKey;
 import javax.crypto.spec.SecretKeySpec;
+import javax.management.remote.SubjectDelegationPermission;
 import javax.security.auth.x500.X500Principal;
 
-import org.bouncycastle.cert.X509v3CertificateBuilder;
+import org.bouncycastle.cert.*;
+import org.bouncycastle.asn1.ASN1Sequence;
+import org.bouncycastle.asn1.x500.X500Name;
+import org.bouncycastle.asn1.x509.*;
 
 public class Seguridad 
 {
@@ -33,7 +38,7 @@ public class Seguridad
 	
 	private SecretKey llave;	
 	private KeyPair keyPair;
-	private X509Certificate certificado;	
+	private X509v3CertificateBuilder certificado;	
 	
 	//------------------------------------------------------------
 	//--------------------------Metodos---------------------------
@@ -57,7 +62,7 @@ public class Seguridad
 
 	public void setLlave(SecretKey llave) {this.llave = llave;}
 
-	public void setCertificado(X509Certificate certificado) {this.certificado = certificado;}
+	public void setCertificado(X509v3CertificateBuilder certificado) {this.certificado = certificado;}
 
 	public void setLlaveSimetrica(byte[] valor) throws Exception {llave = new SecretKeySpec(valor, simetrico);}
 	
@@ -100,7 +105,7 @@ public class Seguridad
 		byte[] bytes = msj.getBytes();
 		String original = new String(bytes);
 		System.out.println("Clave original: "+ original);
-		cipher.init(Cipher.ENCRYPT_MODE, certificado.getPublicKey());
+		cipher.init(Cipher.ENCRYPT_MODE, llave);
 		byte[] bytesCifrados = cipher.doFinal(bytes);
 		System.out.println("Clave cifrada:"+ bytesCifrados);
 		
@@ -128,25 +133,22 @@ public class Seguridad
 		return msjOriginal;
 	}
 
+	@SuppressWarnings("deprecation")
 	public X509v3CertificateBuilder crearCertificado() throws Exception
 	{
-		Date fechaInicio = new Date();
+		Date notBefore  = new Date();
 		Calendar calendar = Calendar.getInstance();
 		calendar.add(Calendar.DAY_OF_YEAR, 1);
-		Date fechaFin = calendar.getTime();             
-		BigInteger numeroSerie = new BigInteger(""+Math.abs(SecureRandom.getInstance("SHA1PRNG").nextLong())); 
+		Date notAfter  = calendar.getTime();             
+		BigInteger serial = new BigInteger(""+Math.abs(SecureRandom.getInstance("SHA1PRNG").nextLong())); 
 		//TODO Crear el certificado con la informacion pedida
-		/*X509v3CertificateBuilder certGen = new X509v3CertificateBuilder();
-		X500Principal dn = new X500Principal("CN=Test CA Certificate");
-		certGen.setSerialNumber(numeroSerie);
-		certGen.setIssuerDN(dn);
-		certGen.setNotBefore(fechaInicio);
-		certGen.setNotAfter(fechaFin);
-		certGen.setSubjectDN(dn);                       
-		certGen.setPublicKey(keyPair.getPublic());
-		certGen.setSignatureAlgorithm("SHA1withRSA");
-		return certGen.generate(keyPair.getPrivate());*/
-		return null;
+		X500Name issuer = new X500Name("CN=Covata");
+		X500Name subject = new X500Name("CN=Delta");
+		byte[] encoded = keyPair.getPublic().getEncoded();
+		SubjectPublicKeyInfo subjectPublicKeyInfo = new SubjectPublicKeyInfo(
+		    ASN1Sequence.getInstance(encoded));
+		X509v3CertificateBuilder certificado = new X509v3CertificateBuilder(issuer, serial, notBefore, notAfter, subject, subjectPublicKeyInfo);
+		return certificado;
 	}
 
 	public byte[] getKeyDigest(byte[] buffer) throws Exception
@@ -155,15 +157,15 @@ public class Seguridad
 		try 
 		{
 			System.out.println("Algoritmo:"+ hMAC);
-			MessageDigest md5 = MessageDigest.getInstance("MD5");
-			md5.update(buffer);
+			MessageDigest messageDigest = MessageDigest.getInstance("MD5");
+			messageDigest.update(buffer);
 			
-			return md5.digest();
+			return messageDigest.digest();
 		} 
 		catch (Exception e) {return null;}
 	}
 	
-	private byte[] calcularHash(String mensaje) 
+	public byte[] calcularHash(String mensaje) 
 	{
 		try
 		{
