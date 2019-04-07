@@ -49,7 +49,7 @@ public class Cliente {
 			System.out.println("------------Caso 2 - Infraestructura Computacional------------");
 			sc = new Scanner(System.in);
 			seguridad = new Seguridad();
-			socketCliente = new Socket();
+			socketCliente = new Socket("localhost", PUERTO);
 			socketCliente.setKeepAlive(true);
 			writer = new PrintWriter(socketCliente.getOutputStream(), true);
 			reader = new BufferedReader(new InputStreamReader(socketCliente.getInputStream()));
@@ -98,19 +98,24 @@ public class Cliente {
 				switch (estado) {
 				case 0:
 					if (comando.equals(OK)) {
-						System.out.println("INICIANDO");
-						System.out.println("escribe 3 algoritmos. s"
-								+ "e colocan ordenados por 'simetrico','asimetrico','HMAC' y separados por comas (e.g AES,RSA,HMACMD5) ");
-						// Los algoritmos se colocan ordenados por 'simétrico','asimétrico','HMAC' y
-						// separados por comas (e.g AES,RSA,HMACMD5)
-						String algos = "AES,RSA,HMACMD5";
-						String[] algoritmos = algos.split(",");
+						System.out.println("INICIANDO\n"
+								+ "Ingrese 3 algorimtos de cifrado deseados ubicados en la lista y separados por comas.\n"
+								+ "Recuerde escoger uno de cada tipo ordenado de la siguiente forma: Simetrico, Asimetrico, HMAC.");
+						String[] lista = { "AES", "BLOWFISH", "RSA", "HMACSHA1", "HMACSHA256", "HMACSHA384",
+								"HMACSHA512" };
+
+						for (int i = 0; i < lista.length; i++)
+							System.out.println("		" + (i + 1) + "). " + lista[i]);
+
+						String seleccionados = sc.next();
+						String[] algoritmos = seleccionados.split(",");
 						seguridad.setAlgoritmos(algoritmos);
 						respuesta = AlGORITMOS + seguridad.getAlgoritmos();
 						writer.println(respuesta);
 						estado++;
 					}
 					break;
+							
 				case 1:
 					if (comando.equals(OK)) {
 						System.out.println("Se intercambiará el Certificado Digital");
