@@ -60,11 +60,11 @@ public class Cliente {
 		}
 
 		try {
-			reader.close();
+			/*reader.close();
 			socketCliente.close();
 			writer.close();
-			sc.close();
-		} catch (IOException e) {
+			sc.close();*/
+		} catch (Exception e) {
 			e.printStackTrace();
 		}
 	}
@@ -105,7 +105,7 @@ public class Cliente {
 								"HMACSHA512" };
 
 						for (int i = 0; i < lista.length; i++)
-							System.out.println("		" + (i + 1) + "). " + lista[i]);
+							System.out.println("	" + (i + 1) + "). " + lista[i]);
 
 						String seleccionados = sc.next();
 						String[] algoritmos = seleccionados.split(",");
@@ -142,7 +142,7 @@ public class Cliente {
 						X509Certificate certiServi = (X509Certificate) certFactory.generateCertificate(in);
 						seguridad.setCertificado(certiServi);
 
-						System.out.println("CLIENTE: OK");
+						System.out.println("CLIENTE:OK");
 						writer.println(OK);
 
 						estado++;
@@ -196,7 +196,7 @@ public class Cliente {
 
 			} else {
 				if (esperando) {
-					System.out.println("waiting...");
+					System.out.println("------esperando respuesta------");
 					esperando = false;
 				}
 			}
